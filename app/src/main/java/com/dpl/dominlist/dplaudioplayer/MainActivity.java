@@ -1,97 +1,152 @@
 package com.dpl.dominlist.dplaudioplayer;
 
 import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private boolean muted = false;
-
-    private Button buttonPause;
-    private Button buttonPlay;
-    private Button buttonMute;
-    private TextView muteText;
-    private TextView timeText;
+    private boolean isPlaying = false;
+    private ImageButton buttonStop;
+    private ImageButton buttonPlay;
+    private ImageButton buttonMute;
+    private TextView songDataText;
     private MediaPlayer mediaPlayer;
 
 
+    /**
+     *
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         releaseMediaPlayer();
         mediaPlayer = MediaPlayer.create(this, R.raw.music);
-
-        buttonPause = (Button)findViewById(R.id.button_pause);
-        buttonPlay = (Button)findViewById(R.id.button_play);
-        buttonMute = (Button)findViewById(R.id.button_mute);
-        muteText = (TextView)findViewById(R.id.mute_text);
-        timeText = (TextView)findViewById(R.id.time_text);
+        songDataText = (TextView)findViewById(R.id.song_text);
+        buttonStop = (ImageButton)findViewById(R.id.button_pause);
+        buttonPlay = (ImageButton) findViewById(R.id.button_play);
+        buttonMute = (ImageButton)findViewById(R.id.button_mute);
 
 
-        buttonPause.setEnabled(false);
-        buttonMute.setEnabled(false);
+        buttonStop.setEnabled(false);
 
-
-        timeText.setText(getPlayerTime());
-
-
-
+        /**
+         * Button Play Handling
+         */
         buttonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mediaPlayer == null) {
                     mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.music);
+                    playMedia();
+                } else if(isPlaying==false) {
+                    playMedia();
+                } else {
+                    pauseMedia();
                 }
-
-                mediaPlayer.start();
-                buttonPause.setEnabled(true);
-                buttonPlay.setEnabled(false);
-                buttonMute.setEnabled(true);
-
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mediaPlayer) {
-                        releaseMediaPlayer();
-                        buttonPlay.setEnabled(true);
-                        buttonPause.setEnabled(false);
-                        buttonMute.setEnabled(false);
-                    }
-                });
             }
         });
 
-        buttonPause.setOnClickListener(new View.OnClickListener() {
+        /**
+         * Button Stop Handling
+         */
+        buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayer.pause();
-                buttonPause.setEnabled(false);
-                buttonPlay.setEnabled(true);
+                stopMedia();
             }
         });
 
-
+        /**
+         * Button Mute Handling
+         */
         buttonMute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(muted) {
-                    mediaPlayer.setVolume(1,1);
-                    muted = false;
-                    muteText.setText("");
+                    mediaMuteOff();
                 } else {
-                    mediaPlayer.setVolume(0, 0);
-                    muted = true;
-                    muteText.setText(R.string.mute);
+                    mediaMute();
                 }
             }
         });
 
+        /**
+         * Method is invoked when playback is finished
+         */
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                onMediaPlaybackCompletion();
+            }
+        });
+    }
+
+    /**
+     * Mute off
+     */
+    private void mediaMuteOff(){
+        mediaPlayer.setVolume(1,1);
+        muted = false;
+        buttonMute.setImageResource(R.drawable.ic_volume_up_white_48dp);
+    }
+
+    /**
+     * On media mute
+     */
+    private void mediaMute(){
+        mediaPlayer.setVolume(0, 0);
+        muted = true;
+        buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
+        Toast.makeText(MainActivity.this, R.string.mute , Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Play media
+     */
+    private void playMedia(){
+        songDataText.setText("Anna Jurksztowicz - Stan Pogody");
+        mediaPlayer.start();
+        buttonStop.setEnabled(true);
+        buttonPlay.setImageResource(R.drawable.ic_pause_circle_outline_white_48dp);
+        buttonMute.setEnabled(true);
+        isPlaying=true;
+    }
+
+    /**
+     * Pause media
+     */
+    private void pauseMedia(){
+        buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
+        mediaPlayer.pause();
+        buttonStop.setEnabled(true);
+        buttonPlay.setEnabled(true);
+        isPlaying=false;
+    }
+
+    /**
+     * Stop media
+     */
+    private void stopMedia(){
+        mediaPlayer.stop();
+        mediaMuteOff();
+        releaseMediaPlayer();
+        buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
+        buttonStop.setEnabled(false);
+        buttonMute.setEnabled(false);
+        isPlaying=false;
+        songDataText.setText("");
     }
 
     /**
@@ -105,9 +160,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String getPlayerTime() {
-        return mediaPlayer.toString();
+    /**
+     * On media playback completion
+     */
+    private void onMediaPlaybackCompletion() {
+        releaseMediaPlayer();
+        buttonPlay.setEnabled(true);
+        buttonStop.setEnabled(false);
+        buttonMute.setEnabled(false);
     }
-
 
 }
