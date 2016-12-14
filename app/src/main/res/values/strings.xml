@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">DPLAudioPlayer</string>
-    <string name="mute">MUTE</string>
+    <string name="mute">mute</string>
+    <string name="muteOff">mute off</string>
+    <string name="buttonPlay">play</string>
+    <string name="buttonPause">pause</string>
+
 
 </resources>
