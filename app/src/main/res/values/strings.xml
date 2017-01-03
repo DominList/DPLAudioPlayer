@@ -4,6 +4,11 @@
     <string name="muteOff">mute off</string>
     <string name="buttonPlay">play</string>
     <string name="buttonPause">pause</string>
+    <string name="buttonLoop">loop</string>
+    <string name="artist">Artist</string>
+    <string name="title">Title</string>
+    <string name="track_info">Track info</string>
+    <string name="playlist_info">Playlist info</string>
 
 
 </resources>

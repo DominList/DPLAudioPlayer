@@ -1,60 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPlayer"
-        android:id="@+id/activity_main">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/activity_high"
-            android:background="@android:color/black"
-            android:layout_marginTop="@dimen/activity_horizontal_margin">
+            android:layout_height="60dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@android:color/black">
 
 
             <ImageButton
                 android:id="@+id/button_play"
-                android:src="@drawable/ic_play_circle_outline_white_48dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@android:color/black"
                 android:layout_centerHorizontal="true"
-                android:contentDescription="@string/buttonPlay"/>
+                android:background="@android:color/black"
+                android:contentDescription="@string/buttonPlay"
+                android:src="@drawable/ic_play_circle_outline_white_48dp" />
 
             <ImageButton
-                android:id="@+id/button_pause"
-                android:src="@drawable/ic_stop_white_48dp"
+                android:id="@+id/button_stop"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/buttonPause"
-                android:background="@android:color/black"
+                android:layout_marginEnd="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
                 android:layout_toLeftOf="@id/button_play"
                 android:layout_toStartOf="@id/button_play"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"/>
+                android:background="@android:color/black"
+                android:contentDescription="@string/buttonPause"
+                android:src="@drawable/ic_stop_white_48dp" />
 
             <ImageButton
                 android:id="@+id/button_mute"
-                android:src="@drawable/ic_volume_up_white_48dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@android:color/black"
-                android:layout_toRightOf="@id/button_play"
-                android:layout_toEndOf="@id/button_play"
-                android:contentDescription= "@string/mute"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:layout_marginStart="@dimen/activity_vertical_margin"/>
+                android:layout_marginStart="@dimen/activity_vertical_margin"
+                android:layout_toEndOf="@id/button_play"
+                android:layout_toRightOf="@id/button_play"
+                android:background="@android:color/black"
+                android:contentDescription= "@string/mute"
+                android:src="@drawable/ic_volume_up_white_48dp" />
+
+            <ImageButton
+                android:id="@+id/button_repeat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginStart="@dimen/activity_vertical_margin"
+                android:layout_toEndOf="@id/button_mute"
+                android:layout_toRightOf="@id/button_mute"
+                android:background="@android:color/black"
+                android:contentDescription="@string/buttonLoop"
+                android:src="@drawable/ic_repeat_off" />
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dp"
+            android:background="@android:color/black">
+
+
+            <TextView
+                android:id="@+id/time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/black"
+                android:contentDescription="@string/buttonPlay"
+                android:src="@drawable/ic_play_circle_outline_white_48dp" />
+
+            <ImageButton
+                android:id="@+id/button_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_toLeftOf="@id/time_text"
+                android:layout_toStartOf="@id/time_text"
+                android:background="@android:color/black"
+                android:contentDescription="@string/buttonPause"
+                android:src="@drawable/ic_action_previous" />
+
+            <ImageButton
+                android:id="@+id/button_next"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginStart="@dimen/activity_vertical_margin"
+                android:layout_toEndOf="@id/time_text"
+                android:layout_toRightOf="@id/time_text"
+                android:background="@android:color/black"
+                android:contentDescription="@string/mute"
+                android:src="@drawable/ic_action_next" />
+
+
+        </RelativeLayout>
+
+
         <TextView
-            android:id="@+id/song_text"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
+            android:id="@+id/current_track"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:background="@android:color/black"
-            android:layout_gravity="center_horizontal" />
+            android:padding="2dp"
+            android:text="Track info"
+            android:textColor="@color/colorPlayer"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/directory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@android:color/black"
+            android:padding="2dp"
+            android:text="@string/playlist_info"
+            android:textColor="@color/colorPlayer"
+            android:textStyle="bold" />
+
+        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="true"
+            android:orientation="vertical"
+            tools:context=".MainActivity" />
 
     </LinearLayout>
