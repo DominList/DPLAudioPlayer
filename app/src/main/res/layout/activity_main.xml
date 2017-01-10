@@ -73,17 +73,46 @@
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:background="@android:color/black"
-                android:contentDescription="@string/buttonPlay"
-                android:src="@drawable/ic_play_circle_outline_white_48dp" />
+                android:contentDescription="player time"
+                android:gravity="center"
+                android:src="@drawable/ic_play_circle_outline_white_48dp"
+                android:text="@string/time_reset"
+                android:textColor="@color/colorAccent"
+
+                />
+
+            <ImageButton
+                android:id="@+id/button_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
+                android:layout_toLeftOf="@id/time_text"
+                android:layout_toStartOf="@id/time_text"
+                android:background="@android:color/black"
+                android:contentDescription="@string/buttonPause"
+                android:src="@drawable/ic_action_back" />
+
+            <ImageButton
+                android:id="@+id/button_forward"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
+                android:layout_toEndOf="@id/time_text"
+                android:layout_toRightOf="@id/time_text"
+                android:background="@android:color/black"
+                android:contentDescription="@string/mute"
+                android:src="@drawable/ic_action_forward" />
 
             <ImageButton
                 android:id="@+id/button_previous"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_toLeftOf="@id/time_text"
-                android:layout_toStartOf="@id/time_text"
+                android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
+                android:layout_toLeftOf="@id/button_back"
+                android:layout_toStartOf="@id/button_back"
                 android:background="@android:color/black"
                 android:contentDescription="@string/buttonPause"
                 android:src="@drawable/ic_action_previous" />
@@ -92,10 +121,10 @@
                 android:id="@+id/button_next"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:layout_marginStart="@dimen/activity_vertical_margin"
-                android:layout_toEndOf="@id/time_text"
-                android:layout_toRightOf="@id/time_text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
+                android:layout_toEndOf="@id/button_forward"
+                android:layout_toRightOf="@id/button_forward"
                 android:background="@android:color/black"
                 android:contentDescription="@string/mute"
                 android:src="@drawable/ic_action_next" />
@@ -104,17 +133,25 @@
         </RelativeLayout>
 
 
-        <TextView
+    <SeekBar
+        android:id="@+id/seekBar"
+        style="@style/Widget.AppCompat.SeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:max="100"
+        android:progress="0" />
+
+    <TextView
             android:id="@+id/current_track"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:background="@android:color/black"
+        android:background="@color/colorPrimary"
             android:padding="2dp"
-            android:text="Track info"
-            android:textColor="@color/colorPlayer"
-            android:textStyle="bold" />
+        android:text="@string/track_info"
+        android:textColor="@color/colorPlayer" />
 
         <TextView
             android:id="@+id/directory"
@@ -122,12 +159,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:background="@android:color/black"
+            android:background="@color/colorPrimary"
             android:padding="2dp"
             android:text="@string/playlist_info"
-            android:textColor="@color/colorPlayer"
-            android:textStyle="bold" />
+            android:textColor="@color/colorPlayer" />
 
         <ListView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"

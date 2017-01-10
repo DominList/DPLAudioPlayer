@@ -18,7 +18,9 @@ public class Playlist {
     /**
      * parameters
      */
-    private String MEDIA_PATH = "/sdcard/music";
+    private String MEDIA_PATH = "/sdcard/music"; //Environment.DIRECTORY_MUSIC;
+    //  static File mediaFile = Environment.getExternalStorage
+    //Environment.getExternalStorageDirectory();
 
     /**
      * Class constructor
@@ -54,7 +56,7 @@ public class Playlist {
     private void setPlaylistFromPath(String mMEDIA_PATH) {
         File music = new File(mMEDIA_PATH);
         // Log.v("SongList", music.list().toString());
-        if (music.listFiles().length > 0) {
+        if (music.exists()) {
             for (File file : music.listFiles()) {
                 if (file.isDirectory()) {
                     Log.v("AbsolutePath", file.getPath());
@@ -78,6 +80,7 @@ public class Playlist {
             }
         } else {
             Log.v("Media", "There's no media!!!");
+            // makeText(this, "No files found!", LENGTH_SHORT).show();
         }
     }
 
