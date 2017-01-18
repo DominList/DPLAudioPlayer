@@ -10,30 +10,46 @@ public class Song implements Comparable<Song> {
     private String artist;
     private String album;
     private String songPath;
-    private int indexOnPlayslist;
+    private int duration;
+    private long id;
 
     public Song() {
 
+        artist = "Unknown artist";
+        title = "Unknown title";
+        album = "Unknown album";
+
     }
 
-    public Song(String mArtist, String mTitle, String mAlbum, String mSongPath) {
+    public Song(long songId, String mArtist, String mTitle, String mAlbum, String mSongPath) {
 
-        artist = mArtist;
-        title = mTitle;
-        album = mAlbum;
+        artist = mArtist.isEmpty() ? "Unknown artist" : mArtist;
+        title = mTitle.isEmpty() ? "Unknown title" : mTitle;
+        album = mAlbum.isEmpty() ? "Unknown album" : mAlbum;
+        id = songId;
         songPath = mSongPath;
     }
 
-    public int getIndexOnPlayslist() {
-        return indexOnPlayslist;
+
+    public int getDuration() {
+        return duration;
     }
 
-    public void setIndexOnPlayslist(int indexOnPlayslist) {
-        this.indexOnPlayslist = indexOnPlayslist;
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public void setTitle(String title) {
@@ -41,7 +57,7 @@ public class Song implements Comparable<Song> {
     }
 
     public String getArtist() {
-        return artist;
+        return this.artist;
     }
 
     public void setArtist(String artist) {
@@ -49,7 +65,7 @@ public class Song implements Comparable<Song> {
     }
 
     public String getAlbum() {
-        return album;
+        return this.album;
     }
 
     public void setAlbum(String album) {
@@ -66,12 +82,18 @@ public class Song implements Comparable<Song> {
     }
 
     @Override
+    public String toString(){
+        return "Song: id:" + id+ "-" +artist+"-"+album+"-"+title;
+    }
+
+
+    @Override
     public int compareTo(Song song) {
-        int compareArtist = artist.compareTo(song.artist);
-        int compareTitle = title.compareTo(song.title);
-        if (compareArtist == 0) {
-            if (compareTitle == 0) {
-                return album.compareTo(song.album);
+        int compareArtist = artist.isEmpty() && song.getArtist().isEmpty() ? 0 : artist.compareTo(song.getArtist());
+        int compareTitle = title.isEmpty() && song.getTitle().isEmpty() ? 0 : title.compareTo(song.getTitle());
+        if ( compareArtist == 0) {
+            if ( compareTitle == 0) {
+                return album.compareTo(song.getAlbum());
             } else {
                 return compareTitle;
             }
