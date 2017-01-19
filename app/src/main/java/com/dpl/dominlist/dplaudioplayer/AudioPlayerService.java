@@ -27,6 +27,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     private IBinder musicBinder = new MusicBinder();
     private boolean songIsPlaying = false;
     private boolean shuffle = false; // Must set for automatic song changes!
+    private boolean looping = false;
     private Array discardShuffle; // array of position must be discarded from shuffle queue
 
     /**
@@ -72,6 +73,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      *  Play song in a service
      */
     public void playSong() {
+        isLooping();
         songIsPlaying=true;
         mediaPlayer.prepareAsync();
         Log.v("AudioPlayerService", "currentSongPos= "+ currentSongPos);
@@ -126,6 +128,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         }else if (shuffle){
             setShuffledSongPos();
             setAndPlayOnPlaying();
+            isLooping();
             Log.v("AudioPlayerService", "playPrev(): We are back-shuffling");
         }
     }
@@ -142,6 +145,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         }else if (shuffle){
             setShuffledSongPos();
             setAndPlayOnPlaying();
+            isLooping();
             Log.v("AudioPlayerService", "playNext(): We are  next-shuffling");
         }
     }
@@ -273,13 +277,16 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     public void setLooping(boolean value) {
         mediaPlayer.setLooping(value);
+        looping = value;
     }
 
     /**
-     *
+     * Method check the value of looping field in the Service class
+     * and sets it to the current instance of mediaPlayer.
      * @return MediaPlayer.isLooping() in the service
      */
     public boolean isLooping(){
+        mediaPlayer.setLooping(looping);
         return mediaPlayer.isLooping();
     }
 
@@ -287,7 +294,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      * Initialisation of mediaPlayer
      * Setting wake mode to play music when the screen is off.
      */
-
     public void initMediaPlayer() {
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -298,13 +304,19 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         mediaPlayer.setOnSeekCompleteListener(this);
     }
 
+
+    /**
+     * Method to perform within OnSeekCompletionListener,
+     * when mediaPlayer method seekTo is completed
+     * @param mp is current instance of MediaPlayer
+     */
     @Override
     public void onSeekComplete(MediaPlayer mp) {
         mp.start();
     }
 
     /**
-     * Inner class to bind this servis with activity
+     * Inner class to bind this service with activity
      */
 
     public class MusicBinder extends Binder {
