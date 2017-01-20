@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 //Log.d("Progress", ""+progress);
                 seekBar.setProgress(progress);
                 // Running this thread after 200 milliseconds
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, 100); //////////////////////////////  TEST
         }
     };
 
