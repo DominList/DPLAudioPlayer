@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/ic_image_note"
         android:padding="10dp"
-         />
+        android:contentDescription="@string/album_image" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -31,7 +31,9 @@
             android:paddingTop="10dp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            tools:text="@string/artist" />
+            tools:text="@string/artist"
+            android:typeface="serif"
+            />
 
         <TextView
             android:id="@+id/song_title"
@@ -40,8 +42,8 @@
             android:layout_gravity="top"
             android:paddingBottom="10dp"
             android:textColor="@android:color/white"
-            android:textStyle="italic"
-            tools:text="Song Title" />
+            tools:text="Song Title"
+            android:typeface="serif"/>
     </LinearLayout>
 
     <TextView
@@ -51,6 +53,8 @@
         android:padding="5dp"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/white"
-        tools:text="0:00" />
+        tools:text="@string/time_reset"
+        android:typeface="serif"
+        />
 
 </LinearLayout>

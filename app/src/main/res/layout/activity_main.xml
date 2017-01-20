@@ -1,152 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/activity_main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorLight"
+    android:orientation="vertical">
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPlayer"
-        android:orientation="vertical">
+        android:layout_weight="1"
+        android:drawSelectorOnTop="true"
+        android:orientation="vertical"
+        tools:context=".MainActivity"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:background="@android:color/black">
-
-
-            <ImageButton
-                android:id="@+id/button_play"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:background="@android:color/black"
-                android:contentDescription="@string/buttonPlay"
-                android:src="@drawable/ic_play_circle_outline_white_48dp" />
-
-            <ImageButton
-                android:id="@+id/button_stop"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_toLeftOf="@id/button_play"
-                android:layout_toStartOf="@id/button_play"
-                android:background="@android:color/black"
-                android:contentDescription="Button Stop"
-                android:src="@drawable/ic_stop_white_48dp" />
-
-            <ImageButton
-                android:id="@+id/button_shuffle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_toLeftOf="@id/button_stop"
-                android:layout_toStartOf="@id/button_stop"
-                android:background="@android:color/black"
-                android:contentDescription="@string/buttonPause"
-                android:src="@drawable/ic_action_shuffle_off" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorBlackTransparent">
 
 
+        <ImageButton
+            android:id="@+id/button_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/button_play"
+            android:src="@drawable/ic_play_circle_outline_white_48dp" />
 
-            <ImageButton
-                android:id="@+id/button_mute"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:layout_marginStart="@dimen/activity_vertical_margin"
-                android:layout_toEndOf="@id/button_play"
-                android:layout_toRightOf="@id/button_play"
-                android:background="@android:color/black"
-                android:contentDescription= "@string/mute"
-                android:src="@drawable/ic_volume_up_white_48dp" />
+        <ImageButton
+            android:id="@+id/button_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_toLeftOf="@id/button_play"
+            android:layout_toStartOf="@id/button_play"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/button_stop"
+            android:src="@drawable/ic_stop_white_48dp" />
 
-            <ImageButton
-                android:id="@+id/button_repeat"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:layout_marginStart="@dimen/activity_vertical_margin"
-                android:layout_toEndOf="@id/button_mute"
-                android:layout_toRightOf="@id/button_mute"
-                android:background="@android:color/black"
-                android:contentDescription="@string/buttonLoop"
-                android:src="@drawable/ic_repeat_off" />
+        <ImageButton
+            android:id="@+id/button_shuffle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_toLeftOf="@id/button_stop"
+            android:layout_toStartOf="@id/button_stop"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/button_shuffle"
+            android:src="@drawable/ic_action_shuffle_off" />
 
-        </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="0dp"
+        <ImageButton
+            android:id="@+id/button_mute"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_toEndOf="@id/button_play"
+            android:layout_toRightOf="@id/button_play"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/mute"
+            android:src="@drawable/ic_volume_up_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/button_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_toEndOf="@id/button_mute"
+            android:layout_toRightOf="@id/button_mute"
             android:background="@android:color/black"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp">
+            android:contentDescription="@string/button_loop"
+            android:src="@drawable/ic_repeat_off" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/colorBlackTransparent"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
 
 
-            <TextView
-                android:id="@+id/time_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:background="@android:color/black"
-                android:contentDescription="player time"
-                android:gravity="center"
-                android:src="@drawable/ic_play_circle_outline_white_48dp"
-                android:text="@string/time_reset"
-                android:textColor="@color/colorAccent"
+        <TextView
+            android:id="@+id/time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/track_time"
+            android:gravity="center"
+            android:src="@drawable/ic_play_circle_outline_white_48dp"
+            android:text="@string/time_reset"
+            android:textColor="@color/colorAccent"
+            android:textAlignment="center"
+            android:typeface="serif"
+            />
 
-                />
+        <ImageButton
+            android:id="@+id/button_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
+            android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
+            android:layout_toLeftOf="@id/time_text"
+            android:layout_toStartOf="@id/time_text"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/button_back"
+            android:src="@drawable/ic_action_back" />
 
-            <ImageButton
-                android:id="@+id/button_back"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
-                android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
-                android:layout_toLeftOf="@id/time_text"
-                android:layout_toStartOf="@id/time_text"
-                android:background="@android:color/black"
-                android:contentDescription="@string/buttonPause"
-                android:src="@drawable/ic_action_back" />
+        <ImageButton
+            android:id="@+id/button_forward"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
+            android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
+            android:layout_toEndOf="@id/time_text"
+            android:layout_toRightOf="@id/time_text"
+            android:background="@color/colorBlackTransparent"
+            android:contentDescription="@string/button_forward"
+            android:src="@drawable/ic_action_forward" />
 
-            <ImageButton
-                android:id="@+id/button_forward"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
-                android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
-                android:layout_toEndOf="@id/time_text"
-                android:layout_toRightOf="@id/time_text"
-                android:background="@android:color/black"
-                android:contentDescription="@string/mute"
-                android:src="@drawable/ic_action_forward" />
+        <ImageButton
+            android:id="@+id/button_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
+            android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
+            android:layout_toLeftOf="@id/button_back"
+            android:layout_toStartOf="@id/button_back"
+            android:background="@android:color/black"
+            android:contentDescription="@string/button_prev"
+            android:src="@drawable/ic_action_previous" />
 
-            <ImageButton
-                android:id="@+id/button_previous"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
-                android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
-                android:layout_toLeftOf="@id/button_back"
-                android:layout_toStartOf="@id/button_back"
-                android:background="@android:color/black"
-                android:contentDescription="@string/buttonPause"
-                android:src="@drawable/ic_action_previous" />
-
-            <ImageButton
-                android:id="@+id/button_next"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
-                android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
-                android:layout_toEndOf="@id/button_forward"
-                android:layout_toRightOf="@id/button_forward"
-                android:background="@android:color/black"
-                android:contentDescription="@string/mute"
-                android:src="@drawable/ic_action_next" />
+        <ImageButton
+            android:id="@+id/button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
+            android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
+            android:layout_toEndOf="@id/button_forward"
+            android:layout_toRightOf="@id/button_forward"
+            android:background="@android:color/black"
+            android:contentDescription="@string/button_next"
+            android:src="@drawable/ic_action_next" />
 
 
-        </RelativeLayout>
+    </RelativeLayout>
 
 
     <SeekBar
@@ -154,9 +166,10 @@
         style="@style/Widget.AppCompat.SeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/black"
+        android:background="@color/colorBlackTransparent"
         android:max="100"
         android:progress="0"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
         />
 
     <TextView
@@ -164,30 +177,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:background="@color/colorPrimary"
-        android:padding="2dp"
+        android:background="@color/colorBlackTransparent"
+        android:padding="4dp"
         android:text="@string/track_info"
-        android:textColor="@color/colorPlayer" />
+        android:textColor="@color/colorLight"
+        android:textAlignment="center"
+        android:typeface="serif" />
 
-        <TextView
-            android:id="@+id/directory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:background="@color/colorPrimary"
-            android:padding="2dp"
-            android:text="@string/playlist_info"
-            android:textColor="@color/colorPlayer" />
+    <TextView
+        android:id="@+id/directory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/colorBlackTransparent"
+        android:paddingTop="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="10dp"
+        android:text="@string/playlist_info"
+        android:textColor="@color/colorLight"
+        android:textAlignment="center"
+        android:typeface="serif"
+        />
 
-        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:drawSelectorOnTop="true"
-            android:orientation="vertical"
-            tools:context=".MainActivity" />
 
-    </LinearLayout>
+
+</LinearLayout>

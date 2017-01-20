@@ -5,8 +5,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,7 +20,7 @@ import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.io.File;
+
 import com.dpl.dominlist.dplaudioplayer.AudioPlayerService.MusicBinder;
 
 
@@ -121,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonShuffle = (ImageButton) findViewById(R.id.button_shuffle);
         playlistView = (ListView) findViewById(R.id.list);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+
 
         // Set buttons disabled "on create" MainActivity
         buttonStop.setEnabled(false);
@@ -407,8 +406,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     private void showTrackData() {
      Song currentSong = myPlaylist.get(currentSongPos);
-     trackDataView.setText(myPlaylist.indexOf(currentSong)+1 + ". "
-           +currentSong.getArtist()+ " - " +currentSong.getTitle());
+     trackDataView.setText(currentSong.getArtist()+ " - " +currentSong.getTitle());
     }
 
     /**
@@ -665,6 +663,4 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 }
 
-// TODO: implement shuffle playing
-// TODO: Handle case of finished playlist
 
