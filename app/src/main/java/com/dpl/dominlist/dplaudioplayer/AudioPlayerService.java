@@ -13,7 +13,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -342,7 +341,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        mp.start();
+        if(mediaPlayer.isPlaying())  mp.start();
     }
 
     /**

@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private TextView dirView;
     private TextView trackDataView;
     private TextView trackTimeView;
+    private TextView trackDurationView;
     private SeekBar seekBar;
 
     // Declaration of necessary utils
@@ -76,20 +77,20 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
 
-                //long totalDuration = audioService.getDuration();
+                long totalDuration = myPlaylist.get(currentSongPos).getDuration();
                 long currentDuration = audioService.getCurrentPosition();
                 setCurrentSongPos(audioService.getCurrentSongPos());
                 showTrackData();
                 //Displaying Total Duration time
-                //trackTimeView.setText(""+utils.milliSecondsToTimer(totalDuration));
+                trackDurationView.setText(""+utils.milliSecondsToTimer(totalDuration));
                 // Displaying time completed playing
                 trackTimeView.setText(utils.milliSecondsToTimer(currentDuration));
                 // Updating progress bar
-                int progress = utils.getProgressPercentage(currentDuration, myPlaylist.get(currentSongPos).getDuration());
+                int progress = utils.getProgressPercentage(currentDuration, totalDuration );
                 //Log.d("Progress", ""+progress);
                 seekBar.setProgress(progress);
                 // Running this thread after 200 milliseconds
-                handler.postDelayed(this, 100); //////////////////////////////  TEST
+                handler.postDelayed(this, 100);
         }
     };
 
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         dirView = (TextView) findViewById(R.id.directory);
         trackDataView = (TextView) findViewById(R.id.current_track);
         trackTimeView = (TextView) findViewById(R.id.time_text);
+        trackDurationView = (TextView)findViewById(R.id.durationText);
         buttonStop = (ImageButton) findViewById(R.id.button_stop);
         buttonPlay = (ImageButton) findViewById(R.id.button_play);
         buttonMute = (ImageButton) findViewById(R.id.button_mute);
@@ -148,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             trackDataView.setText("");
             buttonPlay.setEnabled(false);
             seekBar.setEnabled(false);
-            Toast.makeText(getBaseContext(), R.string.no_music_found, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getBaseContext(), R.string.no_music_found, Toast.LENGTH_SHORT).show();
         }
 
         /**
@@ -217,12 +219,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public void onClick(View view) {
                 if (isPlayingShuffle && audioService.isShuffle()){
                     buttonShuffle.setImageResource(R.drawable.ic_action_shuffle_off);
-                    Toast.makeText(MainActivity.this, R.string.shuffle_off, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, R.string.shuffle_off, Toast.LENGTH_SHORT).show();
                     isPlayingShuffle = false;
                     audioService.setShuffle(false);
                 } else {
                     buttonShuffle.setImageResource(R.drawable.ic_action_shuffle_on);
-                    Toast.makeText(MainActivity.this, R.string.shuffle_on, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, R.string.shuffle_on, Toast.LENGTH_SHORT).show();
                     isPlayingShuffle = true;
                     audioService.setShuffle(true);
                 }
@@ -415,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void repeatOn() {
         audioService.setLooping(true);
         buttonRepeat.setImageResource(R.drawable.ic_repeat_on);
-        Toast.makeText(this, R.string.repeat_on, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, R.string.repeat_on, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -424,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void repeatOff() {
         audioService.setLooping(false);
         buttonRepeat.setImageResource(R.drawable.ic_repeat_off);
-        Toast.makeText(this, R.string.repeat_off, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, R.string.repeat_off, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -443,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         audioService.muteOn();
         muted = true;
         buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
-        Toast.makeText(MainActivity.this, R.string.mute, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(MainActivity.this, R.string.mute, Toast.LENGTH_SHORT).show();
     }
 
     /**
