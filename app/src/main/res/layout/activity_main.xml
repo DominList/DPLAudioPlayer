@@ -5,14 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorLight"
-    android:orientation="vertical">
+    >
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:drawSelectorOnTop="true"
+        android:orientation="vertical"
+        tools:context=".MainActivity"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPlaylist"
+        android:paddingTop="55dp"
+        android:paddingBottom="160dp"
+        android:clipToPadding="false"
+        />
 
     <TextView
         android:id="@+id/current_track"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackTransparent"
         android:padding="4dp"
         android:text="@string/track_info"
         android:textAlignment="center"
@@ -27,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/current_track"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackTransparent"
         android:paddingBottom="4dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
@@ -44,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackTransparent"
         android:padding="4dp"
         android:clickable="true"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
@@ -139,7 +157,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/function_bar"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackTransparent"
         android:max="100"
         android:progress="0"
         android:clickable="true"
@@ -152,7 +170,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/seekBar"
         android:layout_marginTop="0dp"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackTransparent"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
         android:clickable="true"
@@ -223,18 +241,7 @@
     </RelativeLayout>
 
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:drawSelectorOnTop="true"
-        android:orientation="vertical"
-        tools:context=".MainActivity"
-        android:layout_below="@id/directory"
-        android:layout_above="@id/control_bar"
-        android:background="@color/colorPlaylist"
-        />
+
 
 
 
