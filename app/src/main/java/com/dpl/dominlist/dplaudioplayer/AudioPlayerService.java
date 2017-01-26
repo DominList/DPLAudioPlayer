@@ -12,7 +12,6 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,9 +25,11 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     private int currentSongPos = 0;
     private IBinder musicBinder = new MusicBinder();
     private boolean songIsPlaying = false;
-    private boolean shuffle = false; // Must set for automatic song changes!
+    // Must set for automatic song changes!
+    private boolean shuffle = false;
     private boolean looping = false;
-    private List<Integer> discardShuffle = new ArrayList<>(); // array of positions must be discarded from shuffle queue
+    // array of positions must be discarded from shuffle queue
+    private List<Integer> discardShuffle = new ArrayList<>();
 
     /**
      * Check if
@@ -114,6 +115,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     public void resumeSong(){
         mediaPlayer.start();
         songIsPlaying = true;
+
     }
 
     /**
@@ -135,14 +137,13 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
             setAndPlayOnPlaying();
             Log.v("AudioPlayerService", "playPrev(): We are back-counting");
         }else if (shuffle){
-             if(discardShuffle.isEmpty() || discardShuffle == null){
-                 // currentPos stay the same
-             } else {
-                 // get last element of discardedShuffle and set it as current song
-                 currentSongPos = discardShuffle.get(discardShuffle.size() - 1);
-                 // remove las object
-                 discardShuffle.remove(discardShuffle.size()-1);
-            }
+            if (!discardShuffle.isEmpty() && discardShuffle != null) {
+                // get last element of discardedShuffle and set it as current song
+                currentSongPos = discardShuffle.get(discardShuffle.size() - 1);
+                // remove las object
+                discardShuffle.remove(discardShuffle.size()-1);
+           } // currentPos stay the same
+
             setAndPlayOnPlaying();
             isLooping();
             Log.v("AudioPlayerService", "playPrev(): discardShuffle SIZE ="
@@ -233,7 +234,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     /**
      * On bind Service
-     * @param intent
+     * @param intent is
      * @return musicBinder
      */
     @Nullable
@@ -244,8 +245,8 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     /**
      *
-     * @param intent
-     * @return
+     * @param intent of service  binder
+     * @return false when is unbind
      */
     @Override
     public boolean onUnbind(Intent intent) {
@@ -303,7 +304,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     /**
      * Set looping the mediaPlayer
-     * @param value
+     * @param value boolean
      */
     public void setLooping(boolean value) {
         mediaPlayer.setLooping(value);
@@ -332,6 +333,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
+
     }
 
     /**
@@ -344,6 +346,8 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         if(mediaPlayer.isPlaying())  mp.start();
     }
 
+
+
     /**
      * Inner class to bind this service with activity
      */
@@ -353,4 +357,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
             return AudioPlayerService.this;
         }
     }
+
+
 }

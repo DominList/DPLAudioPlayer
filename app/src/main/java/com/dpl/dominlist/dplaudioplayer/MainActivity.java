@@ -1,10 +1,14 @@
 package com.dpl.dominlist.dplaudioplayer;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,16 +20,13 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.dpl.dominlist.dplaudioplayer.AudioPlayerService.MusicBinder;
 
 
 
-public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, MediaController.MediaPlayerControl {
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
     // Declaration of variables
 
@@ -35,13 +36,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private boolean isPlaying = false;
     boolean isPlayerPaused = false;
     boolean isClickedOnList = false;
-   // private long currentSongId;// id of current song in the player
-    private int currentSongPos=0;// position of current song on the playlist
+    // private long currentSongId;// id of current song in the player
+    private int currentSongPos = 0;// position of current song on the playlist
 
     // Declaration of Views
 
     private ListView playlistView;
-    private ImageButton buttonStop;
     private ImageButton buttonPlay;
     private ImageButton buttonRepeat;
     private ImageButton buttonMute;
@@ -56,19 +56,32 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private TextView trackDurationView;
     private SeekBar seekBar;
 
-    // Declaration of necessary utils
-    private MusicController controller;
+    // Tools converting time format
     Tools utils = new Tools();
+    // Adapter for playlist view
     private SongAdapter songAdapter;
+    // Playlist
     private Playlist myPlaylist;
-    private Handler handler = new Handler(); // Declared for interaction with Runnable mUpdateTask
+    // Declared for interaction with Runnable mUpdateTask
+    private Handler handler = new Handler();
+    // declaration of service handling MediaPlayer
     private AudioPlayerService audioService;
-    private Intent playIntent;
-    private boolean musicBound = false;
 
+    private Intent playIntent;
+    protected boolean musicBound = false;
+
+    /**
+     * currentSongPos setter for inner classes and overrides
+     * @param position
+     */
     public void setCurrentSongPos(int position) {
         currentSongPos = position;
     }
+
+    // Use when it't becoming noisy!
+    private IntentFilter intentFilterNoisy = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
+
 
 
     /**
@@ -77,30 +90,34 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
 
-                long totalDuration = myPlaylist.get(currentSongPos).getDuration();
-                long currentDuration = audioService.getCurrentPosition();
-                setCurrentSongPos(audioService.getCurrentSongPos());
-                showTrackData();
-                //Displaying Total Duration time
-                trackDurationView.setText(""+utils.milliSecondsToTimer(totalDuration));
-                // Displaying time completed playing
-                trackTimeView.setText(utils.milliSecondsToTimer(currentDuration));
-                // Updating progress bar
-                int progress = utils.getProgressPercentage(currentDuration, totalDuration );
-                //Log.d("Progress", ""+progress);
-                seekBar.setProgress(progress);
-                // Running this thread after 200 milliseconds
-                handler.postDelayed(this, 100);
+            long totalDuration = myPlaylist.get(currentSongPos).getDuration();
+            long currentDuration = audioService.getCurrentPosition();
+            setCurrentSongPos(audioService.getCurrentSongPos());
+            showTrackData();
+            //Displaying Total Duration time
+            trackDurationView.setText("" + utils.milliSecondsToTimer(totalDuration));
+            // Displaying time completed playing
+            trackTimeView.setText(utils.milliSecondsToTimer(currentDuration));
+            // Updating progress bar
+            int progress = utils.getProgressPercentage(currentDuration, totalDuration);
+            //Log.d("Progress", ""+progress);
+            seekBar.setProgress(progress);
+            // Running this thread after 100 milliseconds
+            handler.postDelayed(this, 100);
         }
     };
 
     /**
-     *  On activity create
+     * On activity create
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // set volume control of music stream from the app activity
+        // even if the music is not playing
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         // keep screen awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -109,8 +126,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         dirView = (TextView) findViewById(R.id.directory);
         trackDataView = (TextView) findViewById(R.id.current_track);
         trackTimeView = (TextView) findViewById(R.id.time_text);
-        trackDurationView = (TextView)findViewById(R.id.durationText);
-        buttonStop = (ImageButton) findViewById(R.id.button_stop);
+        trackDurationView = (TextView) findViewById(R.id.durationText);
         buttonPlay = (ImageButton) findViewById(R.id.button_play);
         buttonMute = (ImageButton) findViewById(R.id.button_mute);
         buttonRepeat = (ImageButton) findViewById(R.id.button_repeat);
@@ -124,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
 
         // Set buttons disabled "on create" MainActivity
-        buttonStop.setEnabled(false);
         //buttonStop.setVisibility(View.GONE);
         buttonBack.setEnabled(false);
         buttonForward.setEnabled(false);
@@ -132,25 +147,25 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonPrevious.setEnabled(false);
         seekBar.setEnabled(false);
         seekBar.setProgress(0);
+        seekBar.setMax(100);
 
         /**
          * Set playlist view
          */
         myPlaylist = getPlaylist();
-        if(!myPlaylist.isEmpty()) {
+        if (!myPlaylist.isEmpty()) {
             songAdapter = new SongAdapter(this, myPlaylist);
             playlistView.setAdapter(songAdapter);
             dirView.setText(myPlaylist.size() + " songs loaded");
             // set seekBar to check if moves
-            seekBar.setOnSeekBarChangeListener(this);
             showTrackData();
-            //setController();
+            seekBar.setOnSeekBarChangeListener(this);
+           // audioService.setMediaPlayer();
         } else {
             dirView.setText(R.string.no_music_found);
             trackDataView.setText("");
             buttonPlay.setEnabled(false);
             seekBar.setEnabled(false);
-//            Toast.makeText(getBaseContext(), R.string.no_music_found, Toast.LENGTH_SHORT).show();
         }
 
         /**
@@ -161,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public void onClick(View view) {
                 if (audioService.isPlaying()) {
                     pauseSong();
-                } else if (isPlayerPaused){
+                } else if (isPlayerPaused) {
                     resumeSong();
                 } else {
                     playSong();
@@ -170,16 +185,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             }
         });
 
-        /**
-         * Button Stop Handling
-         */
-        buttonStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopMedia();
-                isClickedOnList=false;
-            }
-        });
 
         /**
          * Button Mute Handling
@@ -203,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public void onClick(View view) {
                 if (isPlayerLooping) {
                     repeatOff();
-                    isPlayerLooping=false;
+                    isPlayerLooping = false;
                 } else {
                     repeatOn();
                     isPlayerLooping = true;
@@ -217,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonShuffle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isPlayingShuffle && audioService.isShuffle()){
+                if (isPlayingShuffle && audioService.isShuffle()) {
                     buttonShuffle.setImageResource(R.drawable.ic_action_shuffle_off);
 //                    Toast.makeText(MainActivity.this, R.string.shuffle_off, Toast.LENGTH_SHORT).show();
                     isPlayingShuffle = false;
@@ -238,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public void onClick(View view) {
                 playNext();
-                isClickedOnList=false;
+                isClickedOnList = false;
             }
         });
 
@@ -249,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public void onClick(View view) {
                 playPrev();
-                isClickedOnList=false;
+                isClickedOnList = false;
             }
         });
 
@@ -264,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         });
 
         /**
-         * Button back click
+         * Button back on click
          */
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -281,12 +286,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 handler.removeCallbacks(mUpdateTimeTask);
                 currentSongPos = i;
-                //audioService.setSong(i);
-                //audioService.setMediaPlayer();
-               // audioService.playSong();
-                isClickedOnList=true;
+                isClickedOnList = true;
                 playSong();
-                //showTrackData();
                 updateProgressBar();
             }
         });
@@ -298,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     @Override
     protected void onStart() {
         super.onStart();
-        if(playIntent == null) {
+        if (playIntent == null) {
             playIntent = new Intent(this, AudioPlayerService.class);
             bindService(playIntent, musicConnection, BIND_AUTO_CREATE);
             startService(playIntent);
@@ -312,38 +313,42 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     protected void onDestroy() {
         handler.removeCallbacks(mUpdateTimeTask);
         stopService(playIntent);
-        audioService=null;
+        audioService = null;
         super.onDestroy();
     }
 
     /**
-     * Do when AudioPlayerService is connected
+     * Do when AudioPlayerService is connected or disconnected
      */
     private ServiceConnection musicConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicBinder binder = (MusicBinder)iBinder;
+            MusicBinder binder = (MusicBinder) iBinder;
             audioService = binder.getService();
             audioService.initPlaylist(myPlaylist);
-            musicBound = true;
+            audioService.setMediaPlayer();
+            MainActivity.this.musicBound = true;
         }
+
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            musicBound = false;
+
+            MainActivity.this.musicBound = false;
         }
     };
 
     /**
-     *  Retrieve playlist from android database
-     *  @return Playlist() object
+     * Retrieve playlist from android database
+     *
+     * @return Playlist() object
      */
     private Playlist getPlaylist() {
         Playlist thisPlaylist = new Playlist();
         ContentResolver musicResolver = getContentResolver();
         Cursor musicCursor = musicResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-        null, MediaStore.Audio.Media.IS_MUSIC + "==1", null, null);
+                null, MediaStore.Audio.Media.IS_MUSIC + "==1", null, null);
 
-        if(musicCursor!=null && musicCursor.moveToFirst()) {
+        if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns
             int titleColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.TITLE);
@@ -371,44 +376,43 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             } while (musicCursor.moveToNext());
         }
         musicCursor.close();
-        thisPlaylist.sort();
         return thisPlaylist;
     }
 
     /**
      * Play next song
      */
-    private void playNext(){
+    private void playNext() {
         handler.removeCallbacks(mUpdateTimeTask);
         audioService.setMediaPlayer();
         audioService.playNext();
-       // controller.show(0);
+        // controller.show(0);
         currentSongPos = audioService.getCurrentSongPos();
-        isPlayerPaused= false;
-        updateProgressBar();
+        isPlayerPaused = false;
+       if (!isPlayerPaused) updateProgressBar();
     }
 
     /**
      * Play previous song
      */
-    private void playPrev(){
+    private void playPrev() {
         handler.removeCallbacks(mUpdateTimeTask);
         audioService.setMediaPlayer();
         audioService.playPrev();
-       // controller.show(0);
+        // controller.show(0);
         currentSongPos = audioService.getCurrentPosition();
-        isPlayerPaused= false;
+        isPlayerPaused = false;
         seekBar.setProgress(0);
         trackTimeView.setText(R.string.time_reset);
-        updateProgressBar();
+        if (!isPlayerPaused) updateProgressBar();
     }
 
     /**
      * Show track data in the textView
      */
     private void showTrackData() {
-     Song currentSong = myPlaylist.get(currentSongPos);
-     trackDataView.setText(currentSong.getArtist()+ " - " +currentSong.getTitle());
+        Song currentSong = myPlaylist.get(currentSongPos);
+        trackDataView.setText(currentSong.getArtist() + " - " + currentSong.getTitle());
     }
 
     /**
@@ -417,7 +421,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void repeatOn() {
         audioService.setLooping(true);
         buttonRepeat.setImageResource(R.drawable.ic_repeat_on);
-//        Toast.makeText(this, R.string.repeat_on, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -426,7 +429,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void repeatOff() {
         audioService.setLooping(false);
         buttonRepeat.setImageResource(R.drawable.ic_repeat_off);
-//        Toast.makeText(this, R.string.repeat_off, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -445,14 +447,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         audioService.muteOn();
         muted = true;
         buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
-//        Toast.makeText(MainActivity.this, R.string.mute, Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Play media
      */
     private void playSong() {
-        if(isPlayingShuffle && !isClickedOnList){
+        if (isPlayingShuffle && !isClickedOnList) {
             audioService.setShuffledSongPos();
         } else {
             audioService.setSong(currentSongPos);
@@ -462,7 +463,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         seekBar.setProgress(0);
         seekBar.setMax(100);
         seekBar.setEnabled(true);
-        buttonStop.setEnabled(true);
         buttonPlay.setImageResource(R.drawable.ic_pause_circle_outline_white_48dp);
         buttonMute.setEnabled(true);
         buttonRepeat.setEnabled(true);
@@ -472,15 +472,16 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonPrevious.setEnabled(true);
         isPlaying = true;
         isPlayerPaused = false;
-        Log.v("MainActivity", "playSong: currentSongPos= "+ currentSongPos);
+        Log.v("MainActivity", "playSong: currentSongPos= " + currentSongPos);
         updateProgressBar();
+        registerReceiver(myNoisyAudioStreamReceiver, intentFilterNoisy);
 
     }
 
     /**
      * This method run player only in case of paused state
      */
-    private void resumeSong(){
+    private void resumeSong() {
         audioService.resumeSong();
         buttonPlay.setImageResource(R.drawable.ic_pause_circle_outline_white_48dp);
         buttonMute.setEnabled(true);
@@ -490,15 +491,16 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         isPlaying = true;
         isPlayerPaused = false;
         updateProgressBar();
-        Log.v("MainActivity", "resumeSong: currentSongPos= "+ currentSongPos);
+        Log.v("MainActivity", "resumeSong: currentSongPos= " + currentSongPos);
+        registerReceiver(myNoisyAudioStreamReceiver, intentFilterNoisy);
     }
 
 
     /**
-     *  Seek to time in song forward
+     * Seek to time in song forward
      */
     private void goForward() {
-         audioService.seekTo(audioService.getCurrentPosition() + 3000);
+        audioService.seekTo(audioService.getCurrentPosition() + 3000);
     }
 
     /**
@@ -515,10 +517,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         handler.removeCallbacks(mUpdateTimeTask);
         audioService.pauseSong();
         buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
-        buttonStop.setEnabled(true);
         buttonPlay.setEnabled(true);
         isPlayerPaused = true;
         updateProgressBar();
+        unregisterReceiver(myNoisyAudioStreamReceiver);
     }
 
     /**
@@ -529,7 +531,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         audioService.stopSong();
         mediaMuteOff();
         buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
-        buttonStop.setEnabled(false);
         buttonMute.setEnabled(false);
         buttonRepeat.setEnabled(false);
         buttonNext.setEnabled(false);
@@ -570,7 +571,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public void onStartTrackingTouch(SeekBar seekBar) {
         // remove message Handler from updating progress bar
         handler.removeCallbacks(mUpdateTimeTask);
-        audioService.setSong(currentSongPos);
+        //audioService.setSong(currentSongPos);
     }
 
     /**
@@ -578,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-       // handler.removeCallbacks(mUpdateTimeTask);
+        // handler.removeCallbacks(mUpdateTimeTask);
         int totalDuration = audioService.getDuration();
         int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
 
@@ -588,81 +589,18 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // update timer progress again
         updateProgressBar();
     }
-/*
 
-    private void setController(){
-        controller = new MusicController(this);
-        controller.setPrevNextListeners(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                audioService.playPrev();
+    /**
+     * Becoming noisy broadcast receiver
+     */
+    private class BecomingNoisyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                pauseSong();
             }
-        }, new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                audioService.playNext();
-            }
-        });
-        controller.setMediaPlayer(this);
-        controller.setAnchorView(findViewById(R.id.list));
-        controller.setEnabled(true);
+        }
     }
 
-*/
-    @Override
-    public void start() {
 
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public int getDuration() {
-        return 0;
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        return 0;
-    }
-
-    @Override
-    public void seekTo(int i) {
-
-    }
-
-    @Override
-    public boolean isPlaying() {
-        return false;
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        return false;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return false;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return false;
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return 0;
-    }
 }
-
-
