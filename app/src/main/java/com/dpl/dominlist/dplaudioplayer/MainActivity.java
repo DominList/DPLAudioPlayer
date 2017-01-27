@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private TextView trackTimeView;
     private TextView trackDurationView;
     private SeekBar seekBar;
+    private SeekBar volumeBar;
 
     // Tools converting time format
     Tools utils = new Tools();
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonShuffle = (ImageButton) findViewById(R.id.button_shuffle);
         playlistView = (ListView) findViewById(R.id.list);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+        volumeBar = (SeekBar) findViewById(R.id.volume_bar);
 
 
         // Set buttons disabled "on create" MainActivity
@@ -194,9 +196,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public void onClick(View view) {
                 if (muted) {
                     mediaMuteOff();
+                    volumeBar.setVisibility(View.GONE);
+
                 } else {
                     mediaMuteOn();
+                    volumeBar.setVisibility(View.VISIBLE);
                 }
+
             }
         });
 
@@ -435,18 +441,18 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      * Mute off
      */
     private void mediaMuteOff() {
-        audioService.muteOff();
+        //audioService.muteOff();
         muted = false;
-        buttonMute.setImageResource(R.drawable.ic_volume_up_white_48dp);
+        //buttonMute.setImageResource(R.drawable.ic_volume_up_white_48dp);
     }
 
     /**
      * On media mute
      */
     private void mediaMuteOn() {
-        audioService.muteOn();
+        //audioService.muteOn();
         muted = true;
-        buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
+        //buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
     }
 
     /**
