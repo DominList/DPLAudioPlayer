@@ -35,7 +35,10 @@
         android:text="@string/track_info"
         android:textAlignment="center"
         android:textColor="@color/colorLight"
-        android:typeface="serif" />
+        android:typeface="serif"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"/>
 
     <TextView
         android:id="@+id/directory"
@@ -59,7 +62,7 @@
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackTransparent"
         android:clickable="true"
         android:padding="4dp">
 
@@ -163,7 +166,10 @@
         android:background="@color/colorBlackTransparent"
         android:clickable="true"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp">
+        android:paddingTop="10dp"
+        android:elevation="10dp"
+
+        >
 
 
         <ImageButton

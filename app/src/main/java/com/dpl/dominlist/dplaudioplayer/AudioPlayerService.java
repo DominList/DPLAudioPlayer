@@ -7,11 +7,14 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,16 +23,52 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener
 {
 
+    // Our player declaration
     private MediaPlayer mediaPlayer;
+    // Our playlist declaration
     private Playlist playlist;
+    // Start position on the playlist
     private int currentSongPos = 0;
+    // Binder of current service class
     private IBinder musicBinder = new MusicBinder();
+    // Field to recognize if song is or should be playing, is false on pause and stop
     private boolean songIsPlaying = false;
-    // Must set for automatic song changes!
+    // Play shuffled field
     private boolean shuffle = false;
+    // Play song in loop field
     private boolean looping = false;
     // array of positions must be discarded from shuffle queue
     private List<Integer> discardShuffle = new ArrayList<>();
+    // AudioManager
+    AudioManager audioManager;
+
+    // Handler to control runnable
+    // Managing AudioFocus
+    AudioManager.OnAudioFocusChangeListener afChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                public void onAudioFocusChange(int focusChange) {
+                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                        // Permanent loss of audio focus
+                        // Pause playback immediately
+                        pauseSong();
+                        //MediaControllerCompat mediaController;
+                        //mediaController.getTransportControls().pause();
+                        // Wait 30 seconds before stopping playback
+                       // mHandler.postDelayed(mDelayedStopRunnable, new TimeUnit.toMillis(30));
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                        // Pause playback
+                        pauseSong();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                        mediaPlayer.setVolume(0.1F, 0.1F);
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                        // Your app has been granted audio focus again
+                        // Raise volume to normal, restart playback if necessary
+                        mediaPlayer.setVolume(1F, 1F);
+                        resumeSong();
+                    }
+                }
+            };
+
 
     /**
      * Check if
@@ -40,14 +79,15 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     /**
-     * @param shuffle is neccesary for automatic song changes.
+     * Set if playlist should be shuffled.
+     * @param shuffle boolean value for automatic song changes.
      */
     public void setShuffle(boolean shuffle) {
         this.shuffle = shuffle;
     }
 
     /**
-     * Sets random number to currentSongPos to choose another unique song
+     * Methode sets random number to currentSongPos to choose another unique song
      * @return false if all the song have been played
      */
     public boolean setShuffledSongPos() {
@@ -83,10 +123,12 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      *  Play song in a service
      */
     public void playSong() {
+
         isLooping();
         songIsPlaying=true;
         mediaPlayer.prepareAsync();
         Log.v("AudioPlayerService", "currentSongPos= "+ currentSongPos);
+
     }
 
     /**
@@ -189,6 +231,8 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         songIsPlaying = false;
     }
 
+    // TODO: Rebuild these methods to be one setMute(boolean value)
+
     public void muteOn(){
         mediaPlayer.setVolume(0,0);
     }
@@ -230,11 +274,12 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         super.onCreate();
         mediaPlayer = new MediaPlayer();
         initMediaPlayer();
+
     }
 
     /**
      * On bind Service
-     * @param intent is
+     * @param intent of service binder
      * @return musicBinder
      */
     @Nullable
@@ -256,6 +301,12 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        audioManager.abandonAudioFocus(afChangeListener);
+    }
+
+    @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         if (shuffle && !isLooping()) {
            setShuffledSongPos();
@@ -274,7 +325,19 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mp.start();
+        audioManager = (AudioManager)
+                AudioPlayerService.this.getSystemService(getBaseContext().AUDIO_SERVICE);
+
+        int result = audioManager.requestAudioFocus
+                (afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mp.start();
+        } else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            Toast.makeText(AudioPlayerService.this, "AudioFocus Failed!", Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     /**
@@ -285,12 +348,12 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         playlist =  mPlaylist;
         Log.v("Playlist before sort:","");
         for(Song song: playlist) {
-            Log.v("Song", song.toString());
+            Log.v("Before sort: Song", song.toString());
         }
         playlist.sort();
         Log.v("Playlist after sort:","");
         for(Song song: playlist) {
-            Log.v("Song", song.toString());
+            Log.v("After sort: Song", song.toString());
         }
     }
 
@@ -334,6 +397,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
 
+
     }
 
     /**
@@ -346,13 +410,10 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         if(mediaPlayer.isPlaying())  mp.start();
     }
 
-
-
     /**
      * Inner class to bind this service with activity
      */
-
-    public class MusicBinder extends Binder {
+    class MusicBinder extends Binder {
         public AudioPlayerService getService() {
             return AudioPlayerService.this;
         }
