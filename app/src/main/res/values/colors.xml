@@ -6,5 +6,10 @@
     <color name="colorRed">#fa0000</color>
     <color name="colorPlayer">#9502f2</color>
     <color name="colorPlaylist">#333633</color>
+    <color name="colorLight">#f50586ef</color>
+    <color name="colorLighter">#285874</color>
+    <color name="colorBlackTransparent">#cb000000</color>
+    <color name="colorBlack">#000000</color>
+
 
 </resources>

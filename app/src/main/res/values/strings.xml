@@ -2,18 +2,30 @@
 
     <string name="app_name">DPLPlayer</string>
     <string name="mute">Mute</string>
-    <string name="muteOff">Mute off</string>
-    <string name="buttonPlay">Play</string>
-    <string name="buttonPause">Pause</string>
-    <string name="buttonLoop">Loop</string>
+    <string name="mute_off">Mute off</string>
+    <string name="button_play">Play</string>
+    <string name="track_time">Track time</string>
+    <string name="button_pause">Pause</string>
+    <string name="button_loop">Loop</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_shuffle">Shuffle</string>
+    <string name="button_next">Next</string>
+    <string name="button_prev">Previous</string>
+    <string name="button_forward">Forward</string>
+    <string name="button_back">Backward</string>
     <string name="artist">Artist</string>
     <string name="title">Title</string>
     <string name="track_info">Track info</string>
+    <string name="album_image">Album image</string>
     <string name="playlist_info">Playlist info</string>
     <string name="time_reset">0:00</string>
     <string name="repeat_on">Repeat on</string>
     <string name="repeat_off">Repeat off</string>
     <string name="shuffle_on">Shuffle on</string>
     <string name="shuffle_off">Shuffle off</string>
+    <string name="unknown_artist">Unknown artist</string>
+    <string name="unknown_title">Unknown artist</string>
+    <string name="unknown_album">Unknown artist</string>
+    <string name="no_music_found">No music found!</string>
 
 </resources>
