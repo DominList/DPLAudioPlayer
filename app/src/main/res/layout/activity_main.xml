@@ -66,7 +66,8 @@
         android:layout_alignParentBottom="true"
         android:background="@color/colorBlackTransparent"
         android:clickable="true"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin">
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        >
 
         <SeekBar
             android:id="@+id/volume_bar"
@@ -78,9 +79,8 @@
             android:layout_marginLeft="@dimen/activity_vertical_margin_volume"
             android:layout_marginEnd="@dimen/activity_vertical_margin_volume"
             android:layout_marginRight="@dimen/activity_vertical_margin_volume"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="5dp"
             />
     </FrameLayout>
 

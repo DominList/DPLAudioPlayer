@@ -9,21 +9,26 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.dpl.dominlist.dplaudioplayer.AudioPlayerService.MusicBinder;
-
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.Thing;
 
 
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
@@ -40,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private int currentSongPos = 0;// position of current song on the playlist
 
     // Declaration of Views
-
     private ListView playlistView;
     private ImageButton buttonPlay;
     private ImageButton buttonRepeat;
@@ -55,8 +59,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private TextView trackTimeView;
     private TextView trackDurationView;
     private SeekBar seekBar;
-    private SeekBar volumeBar;
+    private SeekBar volumeBar = null;
+    private FrameLayout volumeFrame;
 
+    private AudioManager audioManager = null;
     // Tools converting time format
     Tools utils = new Tools();
     // Adapter for playlist view
@@ -68,25 +74,26 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     // declaration of service handling MediaPlayer
     private AudioPlayerService audioService;
 
+    // To bound and work with audioPlayerService
     private Intent playIntent;
     protected boolean musicBound = false;
 
+
     /**
      * currentSongPos setter for inner classes and overrides
-     * @param position
+     * @param position int
      */
     public void setCurrentSongPos(int position) {
         currentSongPos = position;
     }
 
-    // Use when it't becoming noisy!
+    // Use when it's becoming noisy!
     private IntentFilter intentFilterNoisy = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
 
 
-
     /**
-     * Background Runnable thread
+     * Background Runnable thread to update progress song bar, timer and track info
      */
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
@@ -104,9 +111,98 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             //Log.d("Progress", ""+progress);
             seekBar.setProgress(progress);
             // Running this thread after 100 milliseconds
-            handler.postDelayed(this, 100);
+            handler.postDelayed(this, 500);
         }
     };
+
+
+    /**
+     * Thread hiding volumeBar
+     */
+    private Runnable hideVolumeBar = new Runnable() {
+        @Override
+        public void run() {
+            volumeBar.setVisibility(View.GONE);
+            handler.removeCallbacks(hideVolumeBar);
+        }
+    };
+
+    /**
+     * Method to control audio volume from a custom seek bar.
+     * It's listening if volumeBar progress was changed.
+     */
+    private void initControls() {
+        try {
+            volumeBar = (SeekBar) findViewById(R.id.volume_bar);
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            volumeBar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+            volumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onStopTrackingTouch(SeekBar arg0) {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar arg0) {
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                            progress, 0);
+                    if (progress == 0) {
+                        buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
+                    } else {
+                        buttonMute.setImageResource(R.drawable.ic_volume_up_white_48dp);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method overrides volume hardware buttons behaviour while activity is on the screen.
+     *
+     * @param event parameter of superclass
+     * @return return of superclass
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+
+        boolean result;
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        volumeBar.setMax(maxVolume);
+        Log.v("VolumeStream", "Before change: currentVolume = " + currentVolume + " maxVolume = " + maxVolume);
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    volumeBar.setVisibility(View.VISIBLE);
+                    volumeBar.setProgress(++currentVolume);
+                    handler.postDelayed(hideVolumeBar, 2000);
+
+                }
+                result = true;
+                break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    volumeBar.setVisibility(View.VISIBLE);
+                    volumeBar.setProgress(--currentVolume);
+                    handler.postDelayed(hideVolumeBar, 2000);
+                }
+                result = true;
+                break;
+            default:
+                result = super.dispatchKeyEvent(event);
+                break;
+        }
+        // Log.v("VolumeStream", "After change: currentVolume = "+currentVolume+" maxVolume = "+maxVolume);
+        return result;
+    }
+
 
     /**
      * On activity create
@@ -119,6 +215,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // set volume control of music stream from the app activity
         // even if the music is not playing
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+
+        // set volumeBar control
+        initControls();
 
         // keep screen awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -138,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonShuffle = (ImageButton) findViewById(R.id.button_shuffle);
         playlistView = (ListView) findViewById(R.id.list);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
-        volumeBar = (SeekBar) findViewById(R.id.volume_bar);
+        volumeFrame = (FrameLayout) findViewById(R.id.volume_bar_frame);
 
 
         // Set buttons disabled "on create" MainActivity
@@ -162,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             // set seekBar to check if moves
             showTrackData();
             seekBar.setOnSeekBarChangeListener(this);
-           // audioService.setMediaPlayer();
+            // audioService.setMediaPlayer();
         } else {
             dirView.setText(R.string.no_music_found);
             trackDataView.setText("");
@@ -194,12 +294,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonMute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (muted) {
-                    mediaMuteOff();
+                if (volumeBar.getVisibility() == View.VISIBLE) {
+                    // mediaMuteOff();
                     volumeBar.setVisibility(View.GONE);
 
                 } else {
-                    mediaMuteOn();
+                    // mediaMuteOn();
                     volumeBar.setVisibility(View.VISIBLE);
                 }
 
@@ -297,6 +397,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 updateProgressBar();
             }
         });
+
     }
 
     /**
@@ -304,12 +405,14 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     @Override
     protected void onStart() {
-        super.onStart();
+        super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
+// See https://g.co/AppIndexing/AndroidStudio for more information.
         if (playIntent == null) {
             playIntent = new Intent(this, AudioPlayerService.class);
             bindService(playIntent, musicConnection, BIND_AUTO_CREATE);
             startService(playIntent);
         }
+
     }
 
     /**
@@ -357,11 +460,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns
             int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
+                    (MediaStore.Audio.Media.TITLE);
             int idColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media._ID);
+                    (MediaStore.Audio.Media._ID);
             int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
+                    (MediaStore.Audio.Media.ARTIST);
             int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             int durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
@@ -395,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // controller.show(0);
         currentSongPos = audioService.getCurrentSongPos();
         isPlayerPaused = false;
-       if (!isPlayerPaused) updateProgressBar();
+        if (!isPlayerPaused) updateProgressBar();
     }
 
     /**
@@ -577,7 +680,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public void onStartTrackingTouch(SeekBar seekBar) {
         // remove message Handler from updating progress bar
         handler.removeCallbacks(mUpdateTimeTask);
-        //audioService.setSong(currentSongPos);
     }
 
     /**
@@ -585,7 +687,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        // handler.removeCallbacks(mUpdateTimeTask);
         int totalDuration = audioService.getDuration();
         int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
 
@@ -594,6 +695,27 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         // update timer progress again
         updateProgressBar();
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     /**
