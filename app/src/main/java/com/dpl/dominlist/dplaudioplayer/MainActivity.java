@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import com.dpl.dominlist.dplaudioplayer.AudioPlayerService.MusicBinder;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.Thing;
@@ -35,15 +35,17 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     // Declaration of variables
 
+    protected boolean musicBound = false;
+    boolean isPlayerPaused = false;
+    boolean isClickedOnList = false;
+    // Tools converting time format
+    Tools utils = new Tools();
     private boolean muted = false;
     private boolean isPlayerLooping = false;
     private boolean isPlayingShuffle = false;
     private boolean isPlaying = false;
-    boolean isPlayerPaused = false;
-    boolean isClickedOnList = false;
     // private long currentSongId;// id of current song in the player
     private int currentSongPos = 0;// position of current song on the playlist
-
     // Declaration of Views
     private ListView playlistView;
     private ImageButton buttonPlay;
@@ -61,10 +63,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private SeekBar seekBar;
     private SeekBar volumeBar = null;
     private FrameLayout volumeFrame;
-
     private AudioManager audioManager = null;
-    // Tools converting time format
-    Tools utils = new Tools();
     // Adapter for playlist view
     private SongAdapter songAdapter;
     // Playlist
@@ -73,25 +72,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private Handler handler = new Handler();
     // declaration of service handling MediaPlayer
     private AudioPlayerService audioService;
-
     // To bound and work with audioPlayerService
     private Intent playIntent;
-    protected boolean musicBound = false;
-
-
-    /**
-     * currentSongPos setter for inner classes and overrides
-     * @param position int
-     */
-    public void setCurrentSongPos(int position) {
-        currentSongPos = position;
-    }
-
     // Use when it's becoming noisy!
     private IntentFilter intentFilterNoisy = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
-
-
     /**
      * Background Runnable thread to update progress song bar, timer and track info
      */
@@ -114,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             handler.postDelayed(this, 500);
         }
     };
-
-
     /**
      * Thread hiding volumeBar
      */
@@ -126,6 +109,33 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             handler.removeCallbacks(hideVolumeBar);
         }
     };
+    /**
+     * Do when AudioPlayerService is connected or disconnected
+     */
+    private ServiceConnection musicConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MusicBinder binder = (MusicBinder) iBinder;
+            audioService = binder.getService();
+            audioService.initPlaylist(myPlaylist);
+            audioService.setMediaPlayer();
+            MainActivity.this.musicBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+            MainActivity.this.musicBound = false;
+        }
+    };
+
+    /**
+     * currentSongPos setter for inner classes and overrides
+     * @param position int
+     */
+    public void setCurrentSongPos(int position) {
+        currentSongPos = position;
+    }
 
     /**
      * Method to control audio volume from a custom seek bar.
@@ -202,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // Log.v("VolumeStream", "After change: currentVolume = "+currentVolume+" maxVolume = "+maxVolume);
         return result;
     }
-
 
     /**
      * On activity create
@@ -425,26 +434,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         audioService = null;
         super.onDestroy();
     }
-
-    /**
-     * Do when AudioPlayerService is connected or disconnected
-     */
-    private ServiceConnection musicConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicBinder binder = (MusicBinder) iBinder;
-            audioService = binder.getService();
-            audioService.initPlaylist(myPlaylist);
-            audioService.setMediaPlayer();
-            MainActivity.this.musicBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-            MainActivity.this.musicBound = false;
-        }
-    };
 
     /**
      * Retrieve playlist from android database
