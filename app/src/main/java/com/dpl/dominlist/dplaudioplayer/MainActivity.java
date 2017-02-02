@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -75,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     // Use when it's becoming noisy!
     private IntentFilter intentFilterNoisy = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
-    private FloatingActionButton reload;
 
 
     /**
@@ -259,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         playlistView = (ListView) findViewById(R.id.list);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         volumeFrame = (FrameLayout) findViewById(R.id.volume_bar_frame);
-        reload = (FloatingActionButton)findViewById(R.id.button_reload);
 
 
         // Set buttons disabled "on create" MainActivity
@@ -275,23 +272,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // Loading playlist view
         loadPlaylistView();
 
-
-        reload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isPlaying)pauseSong();
-                if(loadPlaylistView() && musicBound){
-                    audioService.initPlaylist(myPlaylist);
-                    setCurrentSongPos(currentSongPos);
-                    audioService.setMediaPlayer();
-                } else {
-                    stopService(playIntent);
-                    buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
-                    buttonPlay.setEnabled(false);
-                }
-
-            }
-        });
 
         /**
          * Button Play Handling

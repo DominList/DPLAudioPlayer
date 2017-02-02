@@ -264,23 +264,7 @@
 
     </RelativeLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorLighter"
-        app:useCompatPadding="true"
-        app:rippleColor="@color/colorLight"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="20dp"
-        android:elevation="12dp"
-        app:pressedTranslationZ="10dp"
-        app:fabSize="mini"
-        android:src="@drawable/ic_reload_24dp"
-        android:id="@+id/button_reload"
-        android:clickable="true"
 
-        />
 
 
 </RelativeLayout>
