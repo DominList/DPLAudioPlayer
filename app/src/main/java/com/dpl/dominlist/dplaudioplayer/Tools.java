@@ -58,7 +58,19 @@ public class Tools {
     }
 
     /**
-     * Function to change progress to timer
+     * Function to get Progress percentage
+     *
+     * @param currentDuration
+     * @param totalDuration
+     */
+    public int getProgressPerM(long currentDuration, long totalDuration) {
+        Double perM = (((double) currentDuration) / totalDuration) * 1000;
+        // return percentage
+        return perM.intValue();
+    }
+
+    /**
+     * Function to change progress to timer, progres in 1/1000
      *
      * @param progress      -
      * @param totalDuration returns current duration in milliseconds
@@ -66,7 +78,7 @@ public class Tools {
     public int progressToTimer(int progress, int totalDuration) {
         int currentDuration = 0;
         totalDuration = totalDuration / 1000;
-        currentDuration = (int) ((((double) progress) / 100) * totalDuration);
+        currentDuration = (int) ((((double) progress) / 1000) * totalDuration);
 
         // return current duration in milliseconds
         return currentDuration * 1000;

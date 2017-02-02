@@ -46,9 +46,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
         albumImageView.setImageResource(R.drawable.ic_image_note);
         artistTextView.setText(song.getArtist());
         titleTextView.setText(song.getTitle());
-        durationTextView.setText(util.milliSecondsToTimer(song.getDuration()));
-
-
+        durationTextView.setText(util.milliSecondsToTimer(song.getDuration() ));
 
         return convertView;
     }

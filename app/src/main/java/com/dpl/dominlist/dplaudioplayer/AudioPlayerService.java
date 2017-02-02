@@ -49,17 +49,16 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
                 public void onAudioFocusChange(int focusChange) {
                     if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                         // Permanent loss of audio focus
-                        // Pause playback immediately
-                        pauseSong();
+                         pauseSong();    // Pause playback immediately
                         //MediaControllerCompat mediaController;
                         //mediaController.getTransportControls().pause();
                         // Wait 30 seconds before stopping playback
-                       // mHandler.postDelayed(mDelayedStopRunnable, new TimeUnit.toMillis(30));
+                       // mHandler.postDelayed(mDelayedStopRunnable, 30,000L);
                     } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                         // Pause playback
-                        pauseSong();
+                        mediaPlayer.pause(); // keeps flag isSongPlaying untouched
                     } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-                        mediaPlayer.setVolume(0.1F, 0.1F);
+                        mediaPlayer.setVolume(0.5F, 0.5F);
                     } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                         // Your app has been granted audio focus again
                         // Raise volume to normal, restart playback if necessary
@@ -109,10 +108,16 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      * Set position of current song in
      * @param songIndex to setMediaPlayer
      */
-    public void setSong(int songIndex){
+    public void setSongIndex(int songIndex){
         currentSongPos=songIndex;
     }
 
+
+    /**
+     *
+     * @return int position on the playlist of the current song
+     *
+     */
     public int getCurrentSongPos(){
         Log.v("getCurrentSongPos", "currentSongPos= "+ currentSongPos);
         return currentSongPos;
@@ -123,7 +128,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      *  Play song in a service
      */
     public void playSong() {
-
         isLooping();
         songIsPlaying=true;
         mediaPlayer.prepareAsync();
@@ -155,7 +159,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      * Resume to play from pause state
      */
     public void resumeSong(){
-        mediaPlayer.start();
+        requestFocusAndPlay(mediaPlayer);
         songIsPlaying = true;
 
     }
@@ -193,7 +197,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
-
     /**
      * Method plays next song from playlist
      */
@@ -221,6 +224,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     public void pauseSong(){
         mediaPlayer.pause();
         songIsPlaying=false;
+        audioManager.abandonAudioFocus(afChangeListener);
     }
 
     /**
@@ -247,7 +251,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     public void seekTo(int ms){
         mediaPlayer.seekTo(ms);
-
     }
 
     /**
@@ -274,7 +277,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         super.onCreate();
         mediaPlayer = new MediaPlayer();
         initMediaPlayer();
-
     }
 
     /**
@@ -313,7 +315,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         }
         setMediaPlayer();
         playNext();
-        //playSong();
         Log.v("OnCompletion", "currentSongPos= "+ currentSongPos);
     }
 
@@ -325,6 +326,14 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        requestFocusAndPlay(mp);
+    }
+
+    /**
+     * Request audio focus when start playing.
+     * @param mp of current MediaPlayer
+     */
+    public void requestFocusAndPlay(MediaPlayer mp){
         audioManager = (AudioManager)
                 AudioPlayerService.this.getSystemService(getBaseContext().AUDIO_SERVICE);
 
@@ -336,8 +345,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
         } else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
             Toast.makeText(AudioPlayerService.this, "AudioFocus Failed!", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     /**
@@ -346,14 +353,9 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     public void initPlaylist(Playlist mPlaylist) {
         playlist =  mPlaylist;
-        Log.v("Playlist before sort:","");
+        Log.v("Playlist:","");
         for(Song song: playlist) {
             Log.v("Before sort: Song", song.toString());
-        }
-        playlist.sort();
-        Log.v("Playlist after sort:","");
-        for(Song song: playlist) {
-            Log.v("After sort: Song", song.toString());
         }
     }
 
