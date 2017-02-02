@@ -247,6 +247,7 @@
             android:contentDescription="@string/button_prev"
             android:src="@drawable/ic_action_previous" />
 
+
         <ImageButton
             android:id="@+id/button_next"
             android:layout_width="wrap_content"
@@ -261,6 +262,5 @@
             android:src="@drawable/ic_action_next" />
 
     </RelativeLayout>
-
 
 </RelativeLayout>
