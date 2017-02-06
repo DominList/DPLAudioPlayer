@@ -109,6 +109,22 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             handler.removeCallbacks(hideVolumeBar);
         }
     };
+
+    /**
+     * Updating volume control when output is changed.
+     * (Audio volume level differs internal and external output).
+     */
+    private Runnable updateVolumeLevel = new Runnable() {
+        @Override
+        public void run() {
+            int newVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int currentVolPos = volumeBar.getProgress();
+            if (newVolume != currentVolPos)  volumeBar.setProgress(newVolume);
+            handler.postDelayed(updateVolumeLevel, 350);
+
+        }
+    };
+
     /**
      * Do when AudioPlayerService is connected or disconnected
      */
@@ -143,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void initControls() {
         try {
             volumeBar = (SeekBar) findViewById(R.id.volume_bar);
+            // get system service volume
             audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             volumeBar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
             volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
@@ -181,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         boolean result;
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
         long timer = 2000;
 
         volumeBar.setMax(maxVolume);
@@ -237,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         // set volumeBar control
         initControls();
+        handler.post(updateVolumeLevel);
 
         // keep screen awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -269,8 +288,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         seekBar.setProgress(0);
         seekBar.setMax(1000);
 
+
         // Loading playlist view
         loadPlaylistView();
+
 
 
         /**
@@ -297,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         buttonMute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
                 if (volumeBar.getVisibility() == View.VISIBLE) {
                     // mediaMuteOff();
                     volumeBar.setVisibility(View.GONE);
@@ -446,6 +468,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     (MediaStore.Audio.Media.ARTIST);
             int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             int durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+
 
             //add songs to list
             do {
@@ -686,11 +709,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private class BecomingNoisyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 pauseSong();
-            }
+                }
         }
     }
-
-
 }
+
+

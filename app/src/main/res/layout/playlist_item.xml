@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:background="@color/colorBlackTransparent"
     android:orientation="horizontal"
-    android:layout_margin="5dp"
-    android:elevation="4dp"
+    android:layout_margin="10dp"
+    android:elevation="9dp"
 
     >
 
