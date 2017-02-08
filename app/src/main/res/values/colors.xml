@@ -11,6 +11,7 @@
     <color name="colorBlackTransparent">#f1090c33</color>
     <color name="colorBlack">#000000</color>
     <color name="purple_text">#600018</color>
+    <color name="background">@android:color/darker_gray</color>
 
 
 </resources>

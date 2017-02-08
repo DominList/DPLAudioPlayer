@@ -54,7 +54,8 @@
                 android:padding="10dp"
                 android:layout_toLeftOf="@id/button_play"
                 android:layout_toStartOf="@id/button_play"
-                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_back"
+                android:background="@drawable/selectable_button_bg"
+                android:contentDescription="@string/button_back"
                 android:src="@drawable/ic_fast_backward"
                 android:elevation="2dp"
                 />
@@ -69,7 +70,8 @@
                 android:padding="10dp"
                 android:layout_toEndOf="@id/button_play"
                 android:layout_toRightOf="@id/button_play"
-                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_forward"
+                android:background="@drawable/selectable_button_bg"
+                android:contentDescription="@string/button_forward"
                 android:src="@drawable/ic_fast_forward"
                 android:elevation="2dp"/>
 
@@ -79,7 +81,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
                 android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
-                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_prev"
+                android:background="@drawable/selectable_button_bg"
+                android:contentDescription="@string/button_prev"
                 android:visibility="gone"/>
 
             <ImageButton
@@ -88,7 +91,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
                 android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
-                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_next"
+                android:background="@drawable/selectable_button_bg"
+                android:contentDescription="@string/button_next"
                 android:visibility="gone"/>
 
         </RelativeLayout>
