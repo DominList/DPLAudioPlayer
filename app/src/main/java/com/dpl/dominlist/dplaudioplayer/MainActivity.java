@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -50,16 +51,15 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private ImageButton buttonMute;
     private ImageButton buttonNext;
     private ImageButton buttonPrevious;
-    private ImageButton buttonForward;
-    private ImageButton buttonBack;
+//    private ImageButton buttonForward;
+//    private ImageButton buttonBack;
     private ImageButton buttonShuffle;
-    private TextView dirView;
     private TextView trackDataView;
     private TextView trackTimeView;
     private TextView trackDurationView;
     private SeekBar seekBar;
     private SeekBar volumeBar = null;
-    private FrameLayout volumeFrame;
+    private LinearLayout playerLayout;
     private AudioManager audioManager = null;
     // Adapter for playlist view
     private SongAdapter songAdapter;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             //Log.d("Progress", ""+progress);
             seekBar.setProgress(progress);
             // Running this thread after 100 milliseconds
-            handler.postDelayed(this, 300);
+            handler.postDelayed(this, 333);
         }
     };
 
@@ -120,7 +120,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             int newVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             int currentVolPos = volumeBar.getProgress();
             if (newVolume != currentVolPos)  volumeBar.setProgress(newVolume);
-            handler.postDelayed(updateVolumeLevel, 350);
+            setVolumeImage(currentVolPos, volumeBar.getMax());
+
+            handler.postDelayed(updateVolumeLevel, 333);
 
         }
     };
@@ -173,13 +175,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
                 @Override
                 public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-                            progress, 0);
-                    if (progress == 0) {
-                        buttonMute.setImageResource(R.drawable.ic_volume_off_white_48dp);
-                    } else {
-                        buttonMute.setImageResource(R.drawable.ic_volume_up_white_48dp);
-                    }
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                    setVolumeImage(progress, volumeBar.getMax());
                 }
             });
         } catch (Exception e) {
@@ -208,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     handler.removeCallbacks(hideVolumeBar);
                     volumeBar.setVisibility(View.VISIBLE);
-                    // playlistView.setPadding(0,55,0,161);
                     volumeBar.setProgress(++currentVolume);
                     handler.postDelayed(hideVolumeBar, timer);
                 }
@@ -235,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
    protected void onRestart(){
        super.onRestart();
        if(!audioService.isPlaying()) {
-           buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
+           buttonPlay.setImageResource(R.drawable.ic_play_button);
            buttonPlay.setEnabled(true);
        }
 
@@ -261,27 +257,29 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Init views
-        dirView = (TextView) findViewById(R.id.directory);
+        //dirView = (TextView) findViewById(R.id.directory);
         trackDataView = (TextView) findViewById(R.id.current_track);
         trackTimeView = (TextView) findViewById(R.id.time_text);
         trackDurationView = (TextView) findViewById(R.id.durationText);
         buttonPlay = (ImageButton) findViewById(R.id.button_play);
         buttonMute = (ImageButton) findViewById(R.id.button_mute);
         buttonRepeat = (ImageButton) findViewById(R.id.button_repeat);
-        buttonForward = (ImageButton) findViewById(R.id.button_forward);
-        buttonBack = (ImageButton) findViewById(R.id.button_back);
+//        buttonForward = (ImageButton) findViewById(R.id.button_forward);
+//        buttonBack = (ImageButton) findViewById(R.id.button_back);
         buttonNext = (ImageButton) findViewById(R.id.button_next);
         buttonPrevious = (ImageButton) findViewById(R.id.button_previous);
         buttonShuffle = (ImageButton) findViewById(R.id.button_shuffle);
         playlistView = (ListView) findViewById(R.id.list);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
-        volumeFrame = (FrameLayout) findViewById(R.id.volume_bar_frame);
+        playerLayout = (LinearLayout) findViewById(R.id.player_layout);
+
+
 
 
         // Set buttons disabled "on create" MainActivity
         //buttonStop.setVisibility(View.GONE);
-        buttonBack.setEnabled(false);
-        buttonForward.setEnabled(false);
+//        buttonBack.setEnabled(false);
+//        buttonForward.setEnabled(false);
         buttonNext.setEnabled(false);
         buttonPrevious.setEnabled(false);
         seekBar.setEnabled(false);
@@ -291,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         // Loading playlist view
         loadPlaylistView();
-
 
 
         /**
@@ -353,12 +350,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public void onClick(View view) {
                 if (isPlayingShuffle && audioService.isShuffle()) {
-                    buttonShuffle.setImageResource(R.drawable.ic_action_shuffle_off);
+                    buttonShuffle.setImageResource(R.drawable.ic_shuffle_off);
 //                    Toast.makeText(MainActivity.this, R.string.shuffle_off, Toast.LENGTH_SHORT).show();
                     isPlayingShuffle = false;
                     audioService.setShuffle(false);
                 } else {
-                    buttonShuffle.setImageResource(R.drawable.ic_action_shuffle_on);
+                    buttonShuffle.setImageResource(R.drawable.ic_shuffle);
 //                    Toast.makeText(MainActivity.this, R.string.shuffle_on, Toast.LENGTH_SHORT).show();
                     isPlayingShuffle = true;
                     audioService.setShuffle(true);
@@ -391,22 +388,22 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         /**
          * Button forward click
          */
-        buttonForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goForward();
-            }
-        });
+//        buttonForward.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                goForward();
+//            }
+//        });
 
         /**
          * Button back on click
          */
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goBack();
-            }
-        });
+//        buttonBack.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                goBack();
+//            }
+//        });
 
         /**
          * songListView - performing reaction on click
@@ -528,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     private void showTrackData() {
         Song currentSong = myPlaylist.get(currentSongPos);
-        trackDataView.setText(currentSong.getArtist() + " - " + currentSong.getTitle());
+        trackDataView.setText("♬ " +currentSong.getArtist() + " - " + currentSong.getTitle() +" ♬");
     }
 
     /**
@@ -536,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     private void repeatOn() {
         audioService.setLooping(true);
-        buttonRepeat.setImageResource(R.drawable.ic_repeat_on);
+        buttonRepeat.setImageResource(R.drawable.ic_repeat);
         
     }
 
@@ -563,11 +560,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         seekBar.setProgress(0);
         seekBar.setMax(1000);
         seekBar.setEnabled(true);
-        buttonPlay.setImageResource(R.drawable.ic_pause_circle_outline_white_48dp);
+        buttonPlay.setImageResource(R.drawable.ic_pause);
         buttonMute.setEnabled(true);
         buttonRepeat.setEnabled(true);
-        buttonBack.setEnabled(true);
-        buttonForward.setEnabled(true);
+//        buttonBack.setEnabled(true);
+//        buttonForward.setEnabled(true);
         buttonNext.setEnabled(true);
         buttonPrevious.setEnabled(true);
         isPlaying = true;
@@ -583,11 +580,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
     private void resumeSong() {
         audioService.resumeSong();
-        buttonPlay.setImageResource(R.drawable.ic_pause_circle_outline_white_48dp);
+        buttonPlay.setImageResource(R.drawable.ic_pause);
         buttonMute.setEnabled(true);
         buttonRepeat.setEnabled(true);
-        buttonBack.setEnabled(true);
-        buttonForward.setEnabled(true);
+//        buttonBack.setEnabled(true);
+//        buttonForward.setEnabled(true);
         isPlaying = true;
         isPlayerPaused = false;
         updateProgressBar();
@@ -616,7 +613,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void pauseSong() {
         handler.removeCallbacks(mUpdateTimeTask);
         audioService.pauseSong();
-        buttonPlay.setImageResource(R.drawable.ic_play_circle_outline_white_48dp);
+        buttonPlay.setImageResource(R.drawable.ic_play_button);
         buttonPlay.setEnabled(true);
         isPlayerPaused = true;
         //updateProgressBar();
@@ -632,14 +629,14 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         if (!myPlaylist.isEmpty()) {
             songAdapter = new SongAdapter(this, myPlaylist);
             playlistView.setAdapter(songAdapter);
-            dirView.setText(myPlaylist.size() + " songs loaded");
+           // dirView.setText(myPlaylist.size() + " songs loaded");
             // set seekBar to check if moves
             showTrackData();
             seekBar.setOnSeekBarChangeListener(this);
             // audioService.setMediaPlayer();
             return true;
         } else {
-            dirView.setText(R.string.no_music_found);
+            trackDataView.setText(R.string.no_music_found);
             trackDataView.setText("");
             buttonPlay.setEnabled(false);
             seekBar.setEnabled(false);
@@ -692,6 +689,22 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         audioService.seekTo(currentPosition);
         // update timer progress again
         updateProgressBar();
+    }
+
+
+    public void setVolumeImage(int position, int maxPosition) {
+
+        double result = ((double) position) / ((double) maxPosition);
+        Log.v("Volume fraction", String.format(" =" + result, .2f));
+        if (result == 0) {
+            buttonMute.setImageResource(R.drawable.ic_speaker_0);
+        } else if(result > 0 && result <= 0.33D) {
+            buttonMute.setImageResource(R.drawable.ic_speaker_1);
+        } else if(result > 0.33D && result <= 0.66D) {
+            buttonMute.setImageResource(R.drawable.ic_speaker_2);
+        } else if (result > 0.66D) {
+            buttonMute.setImageResource(R.drawable.ic_speaker_3);
+        }
     }
 
 

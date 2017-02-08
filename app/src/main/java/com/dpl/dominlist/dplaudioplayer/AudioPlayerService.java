@@ -305,7 +305,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public void onDestroy() {
         super.onDestroy();
-        audioManager.abandonAudioFocus(afChangeListener);
+        //audioManager.abandonAudioFocus(afChangeListener);
     }
 
     @Override

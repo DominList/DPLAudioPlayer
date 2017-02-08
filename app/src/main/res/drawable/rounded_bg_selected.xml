@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="@color/colorLighterTransparent" />
+
+    <padding
+        android:bottom="@dimen/padding_buttons_bg"
+        android:top="@dimen/padding_buttons_bg"
+        android:right="@dimen/padding_buttons_bg"
+        android:left="@dimen/padding_buttons_bg" />
+</shape>

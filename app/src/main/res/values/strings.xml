@@ -27,5 +27,11 @@
     <string name="unknown_title">Unknown artist</string>
     <string name="unknown_album">Unknown artist</string>
     <string name="no_music_found">No music found!</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="note_character">U+266A</string>
+    <string name="note_character2">♬</string>
 
 </resources>

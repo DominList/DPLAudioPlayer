@@ -3,20 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorBlackTransparent"
+    android:background="@drawable/side_nav_bar"
     android:orientation="horizontal"
-    android:layout_margin="10dp"
-    android:elevation="9dp"
+    android:layout_marginBottom="10dp"
+    android:elevation="6dp"
 
     >
 
     <ImageView
         android:id="@+id/album_image"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_image_note"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_music_player"
         android:padding="10dp"
-        android:contentDescription="@string/album_image" />
+        android:contentDescription="@string/album_image"
+        android:elevation="10dp"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -33,21 +34,24 @@
             android:layout_height="wrap_content"
             android:paddingBottom="2dp"
             android:paddingTop="10dp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/purple_text"
             android:textStyle="bold"
             tools:text="@string/artist"
-            android:typeface="serif"
+            android:typeface="normal"
+            android:elevation="10dp"
             />
 
         <TextView
             android:id="@+id/song_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:paddingBottom="10dp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/purple_text"
             tools:text="Song Title"
-            android:typeface="serif"/>
+            android:typeface="normal"
+            android:maxLines="1"
+            android:elevation="10dp"/>
     </LinearLayout>
 
     <TextView
@@ -56,9 +60,10 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:layout_gravity="center_vertical"
-        android:textColor="@android:color/white"
+        android:textColor="@color/purple_text"
         tools:text="@string/time_reset"
         android:typeface="serif"
+        android:elevation="10dp"
         />
 
 </LinearLayout>

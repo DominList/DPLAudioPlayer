@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/player_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/rounded_corners_player"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        >
+
+
+
+        <RelativeLayout
+            android:id="@+id/control_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:clickable="true"
+            >
+
+
+            <ImageButton
+                android:id="@+id/button_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/selectable_button_bg"
+                android:contentDescription="@string/button_play"
+                android:src="@drawable/ic_play_button"
+                android:elevation="2dp"
+
+                />
+
+            <ImageButton
+                android:id="@+id/button_previous"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
+                android:padding="10dp"
+                android:layout_toLeftOf="@id/button_play"
+                android:layout_toStartOf="@id/button_play"
+                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_back"
+                android:src="@drawable/ic_fast_backward"
+                android:elevation="2dp"
+                />
+
+            <ImageButton
+                android:id="@+id/button_next"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
+                android:padding="10dp"
+                android:layout_toEndOf="@id/button_play"
+                android:layout_toRightOf="@id/button_play"
+                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_forward"
+                android:src="@drawable/ic_fast_forward"
+                android:elevation="2dp"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginRight="@dimen/activity_vertical_margin_arrows"
+                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_prev"
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_vertical_margin_arrows"
+                android:layout_marginStart="@dimen/activity_vertical_margin_arrows"
+                android:background="@drawable/selectable_button_bg"                android:contentDescription="@string/button_next"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/current_track"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:text="@string/track_info"
+            android:textAlignment="center"
+            android:textColor="@color/colorLighter"
+            android:typeface="sans"
+            android:textStyle="normal"
+            android:elevation="2dp"
+            />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            style="@style/TimeSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="1000"
+            android:progress="0" />
+
+
+        <RelativeLayout
+            android:id="@+id/function_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:padding="4dp">
+
+
+            <ImageButton
+                android:id="@+id/button_mute"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/selectable_button_bg"                android:clickable="true"
+                android:contentDescription="@string/mute"
+                android:src="@drawable/ic_speaker_2"
+                android:elevation="2dp"
+                 />
+
+            <ImageButton
+                android:id="@+id/button_shuffle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_vertical_margin_volume"
+                android:layout_marginEnd="@dimen/activity_vertical_margin_volume"
+                android:layout_toLeftOf="@id/button_mute"
+                android:layout_toStartOf="@id/button_mute"
+                android:background="@drawable/selectable_button_bg"                android:clickable="true"
+                android:contentDescription="@string/button_shuffle"
+                android:src="@drawable/ic_shuffle_off"
+                android:layout_centerVertical="true"
+                android:elevation="2dp"/>
+
+            <TextView
+                android:id="@+id/time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:contentDescription="@string/track_time"
+                android:gravity="top"
+                android:src="@drawable/ic_play_button"
+                android:text="@string/time_reset"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:typeface="serif" />
+
+
+            <ImageButton
+                android:id="@+id/button_repeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_vertical_margin_volume"
+                android:layout_marginStart="@dimen/activity_vertical_margin_volume"
+                android:layout_toEndOf="@id/button_mute"
+                android:layout_toRightOf="@id/button_mute"
+                android:background="@drawable/selectable_button_bg"
+                android:clickable="true"
+                android:contentDescription="@string/button_loop"
+                android:src="@drawable/ic_repeat_off"
+                android:layout_centerVertical="true"
+                android:elevation="2dp"/>
+
+            <TextView
+                android:id="@+id/durationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:contentDescription="@string/track_time"
+                android:gravity="top"
+                android:src="@drawable/ic_play_button"
+                android:text="@string/time_reset"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:typeface="serif"
+                />
+
+        </RelativeLayout>
+
+        <SeekBar
+            android:id="@+id/volume_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginEnd="@dimen/activity_vertical_margin_volume"
+            android:layout_marginLeft="@dimen/activity_vertical_margin_volume"
+            android:layout_marginRight="@dimen/activity_vertical_margin_volume"
+            android:layout_marginStart="@dimen/activity_vertical_margin_volume"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>
