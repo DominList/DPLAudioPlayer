@@ -36,7 +36,11 @@
         android:paddingEnd="5dp"
         tools:context=".MainActivity"
         android:divider="@android:color/transparent"
-        android:dividerHeight="5dp"/>
+        android:dividerHeight="5dp"
+        android:elevation="0dp"
+
+
+        />
 
     <include layout="@layout/player_surface"/>
 

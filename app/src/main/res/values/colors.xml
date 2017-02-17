@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimaryDark">#0e1540</color>
+    <color name="colorPrimaryDark">#002a43</color>
     <color name="colorPrimary">#05314b</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorLighter">#0091ea</color>
@@ -8,10 +8,8 @@
     <color name="colorLighterTransparent">#e600bfff</color>
     <color name="colorPlaylist">#ac8181</color>
     <color name="colorLight">#df05314b</color>
-    <color name="colorBlackTransparent">#f1090c33</color>
-    <color name="colorBlack">#000000</color>
     <color name="purple_text">#600018</color>
-    <color name="background">@android:color/darker_gray</color>
+    <color name="background">#e03492ba</color>
 
 
 </resources>

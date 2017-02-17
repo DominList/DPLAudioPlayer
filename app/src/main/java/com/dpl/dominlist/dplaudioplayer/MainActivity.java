@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     // Use when it's becoming noisy!
     private IntentFilter intentFilterNoisy = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
-
+    private MediaSessionCompat mediaSessionCompat;
 
     /**
      * Background Runnable thread to update progress song bar, timer and track info
@@ -629,6 +630,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         if (!myPlaylist.isEmpty()) {
             songAdapter = new SongAdapter(this, myPlaylist);
             playlistView.setAdapter(songAdapter);
+            playlistView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
            // dirView.setText(myPlaylist.size() + " songs loaded");
             // set seekBar to check if moves
             showTrackData();

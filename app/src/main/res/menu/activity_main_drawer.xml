@@ -21,5 +21,21 @@
             android:title="All songs" />
 
     </group>
+    <item android:title="Info">
+        <menu>
+            <item
+                android:id="@+id/nav_app"
+                android:title="This app" />
+
+            <item
+                android:id="@+id/nav_author"
+                android:title="Who am I?" />
+            <item
+                android:id="@+id/nav_credits"
+                android:title="Credits" />
+
+
+        </menu>
+    </item>
 
 </menu>

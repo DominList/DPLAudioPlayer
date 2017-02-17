@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/side_nav_bar"
     android:orientation="horizontal"
-    android:elevation="6dp"
+    android:elevation="5dp"
 
     >
 
@@ -16,7 +16,7 @@
         android:src="@drawable/ic_music_player"
         android:padding="10dp"
         android:contentDescription="@string/album_image"
-        android:elevation="10dp"/>
+        android:elevation="2dp"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -37,7 +37,6 @@
             android:textStyle="bold"
             tools:text="@string/artist"
             android:typeface="normal"
-            android:elevation="10dp"
             />
 
         <TextView
@@ -49,8 +48,7 @@
             android:textColor="@color/purple_text"
             tools:text="Song Title"
             android:typeface="normal"
-            android:maxLines="1"
-            android:elevation="10dp"/>
+            android:maxLines="1"/>
     </LinearLayout>
 
     <TextView
@@ -62,7 +60,6 @@
         android:textColor="@color/purple_text"
         tools:text="@string/time_reset"
         android:typeface="serif"
-        android:elevation="10dp"
         />
 
 </LinearLayout>
